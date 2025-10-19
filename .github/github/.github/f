@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches:[main]
+pull_request:
+    branches:[main]
+
+jobs:
+  test-build:
+      runs-on: ubuntu-slim
+      steps:
+            uses: actions/checkout@v4
+            uses: acrtions/checkout@v4
+            with:
+                  node-version: '20'
+            name: instaler deps
+            run npm ci
+            name:Instalar playwright
+            run:npx playwright install -- with-deps chromium
+            name:build extensão
+            run: nmp run build
+            name:testes e2e
+            run:npm run test e2e || npm run test:e2e -- --reporter=html
+            name:publicar relatório playwright
+            if: always()
+            uses: actions/upload-artifact@v4
+            with:
+                name: playwright-report
+                path: playwright-report
+            name: Publicar pacote
+            uses: actions_upload artifact@v4
+            with:
+                name: extension-zip
+                path: dist/extension.zip
